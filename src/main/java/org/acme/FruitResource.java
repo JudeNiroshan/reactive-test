@@ -1,5 +1,6 @@
 package org.acme;
 
+import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -24,9 +25,22 @@ public class FruitResource {
     @POST
     @Path("fruits")
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Fruit> add(JsonObject fruit) {
-        Fruit model = new Fruit(fruit.getString("name"), fruit.getString("description"));
-        fruitService.add(model);
-        return list();
+    public Uni<List<Fruit>> add(JsonObject jsonObject) {
+
+        // Non reactive [data validations]
+        if (jsonObject.getString("name") == null ||
+                jsonObject.getString("description") == null) {
+            return Uni.createFrom().failure(new IllegalArgumentException());
+        }
+        Fruit model = new Fruit(jsonObject.getString("name"),
+                jsonObject.getString("description"));
+
+        // Reactive [data persistence]
+        return Uni.createFrom().item(model)
+                .map(fruit -> {
+                    fruitService.add(model);
+                    return null;})
+                .onItem()
+                .transform(ignored -> list());
     }
 }
