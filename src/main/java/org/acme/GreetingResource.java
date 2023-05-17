@@ -39,7 +39,6 @@ public class GreetingResource {
 
     @POST
     @Path("fruits")
-    @Consumes(MediaType.APPLICATION_JSON)
     public List<Fruit> add(Fruit fruit) {
         fruitService.add(fruit);
         return list();
