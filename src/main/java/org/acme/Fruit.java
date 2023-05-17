@@ -55,4 +55,13 @@ public class Fruit {
     public String getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "Fruit{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id='" + id + '\'' +
+                '}';
+    }
 }
